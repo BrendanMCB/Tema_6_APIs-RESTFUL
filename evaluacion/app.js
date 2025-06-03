@@ -1,10 +1,9 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-const libros = require('./books');
+const libros = require('./books.js'); // Correctly imports books.js from the same folder
 
-app.use(express.json());
-
+app.use(express.json()); // Essential for handling JSON request bodies
 
 // Codigo de Swagger por abajo
 
@@ -28,7 +27,10 @@ const swaggerOptions = {
             },
         ],
     },
-    apis: ["./evaluacion/books.js"],
+    // *** THIS IS THE CRUCIAL FIX ***
+    // Since app.js and books.js are in the same folder,
+    // the path should be './books.js' not './evaluacion/books.js'
+    apis: ["./books.js"],
 };
 
 const swaggerSpecs = swaggerJsDoc(swaggerOptions);
@@ -37,6 +39,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
     supportedSubmitMethods: []
 }));
 
+// This line mounts the router from books.js at the '/libros' base path
 app.use('/libros', libros);
 
 
